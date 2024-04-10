@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 import '../../common/colo_extension.dart';
 import '../../common_widget/round_button.dart';
-// import '../../xxemedy/lib/common_widget/round_button.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'dart:io';
@@ -12,23 +11,18 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import '/view/detail_screen.dart';
 
-
-
 class PhotoProgressView extends StatefulWidget {
-  const PhotoProgressView({super.key});
+  const PhotoProgressView({Key? key}) : super(key: key);
 
   @override
   State<PhotoProgressView> createState() => _PhotoProgressViewState();
 }
 
 class _PhotoProgressViewState extends State<PhotoProgressView> {
-  // TextEditingController _controllerDescription = TextEditingController();
-  // TextEditingController _controllerWeight = TextEditingController();
-
   GlobalKey<FormState> key = GlobalKey();
 
   CollectionReference _reference =
-  FirebaseFirestore.instance.collection('images');
+      FirebaseFirestore.instance.collection('images');
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +40,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           style: TextStyle(
             color: TColor.black,
             fontSize: 16,
-            fontWeight: FontWeight.w700),
+            fontWeight: FontWeight.w700,
+          ),
         ),
         actions: [
           InkWell(
@@ -58,7 +53,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: TColor.lightGray,
-                borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: Image.asset(
                 "assets/img/more_btn.png",
                 width: 15,
@@ -74,119 +70,112 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10, horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Gallery",
-                            style: TextStyle(
-                              color: TColor.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              "See more",
-                              style: TextStyle(
-                                color: TColor.gray, fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ), // Adjust the height between the Row and the text below
                       Text(
-                        currentDate,
+                        "Gallery",
                         style: TextStyle(
-                          color: TColor.gray,
-                          fontSize: 12,
+                          color: TColor.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(
-                        height: 100,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: StreamBuilder<QuerySnapshot>(
-                            stream: _reference.snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              }
-
-                              if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                                return CircularProgressIndicator(); // Placeholder while loading
-                              }
-
-                              // If there are no images
-                              if (snapshot.data == null ||
-                                snapshot.data!.docs.isEmpty) {
-                                return Text('No images found.');
-                              }
-
-                              // Display images
-                              // Inside the StreamBuilder where you display images
-                              return Row(
-                                children: snapshot.data!.docs.map((doc) {
-                                    var imageUrl = doc['imageUrl'];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => DetailScreen(imageUrl: imageUrl),
-                                          ),
-                                        );
-                                      },
-                                      child: Hero(
-                                        tag: imageUrl, // Unique tag for each image
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            color: TColor.lightGray,
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(10),
-                                            child: Image.network(
-                                              imageUrl,
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                }).toList(),
-                              );
-
-                            },
+                      TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          "See more",
+                          style: TextStyle(
+                            color: TColor.gray,
+                            fontSize: 12,
                           ),
                         ),
                       ),
                     ],
                   ),
-                )
-              ],
-            ),
-            SizedBox(
-              height: media.width * 0.05,
-            ),
+                  SizedBox(
+                    height: 8,
+                  ), // Adjust the height between the Row and the text below
+                  Text(
+                    currentDate,
+                    style: TextStyle(
+                      color: TColor.gray,
+                      fontSize: 12,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: _reference.snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Placeholder while loading
+                      }
+
+                      // If there are no images
+                      if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                        return Text('No images found.');
+                      }
+
+                      // Display images
+                      // Inside the StreamBuilder where you display images
+                      return GridView.count(
+                        crossAxisCount: 3, // Number of columns
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: snapshot.data!.docs.map((doc) {
+                          var imageUrl = doc['imageUrl'];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailScreen(imageUrl: imageUrl),
+                                ),
+                              );
+                            },
+                            child: Hero(
+                              tag: imageUrl, // Unique tag for each image
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: TColor.lightGray,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    imageUrl,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -194,8 +183,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
         onTap: () async {
           print('this is a test');
           ImagePicker imagePicker = ImagePicker();
-          XFile? file = await imagePicker.pickImage(
-            source: ImageSource.gallery);
+          XFile? file =
+              await imagePicker.pickImage(source: ImageSource.gallery);
           print('${file?.path}');
 
           if (file == null) return;
@@ -204,11 +193,11 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           UploadTask uploadTask = ref.putFile(File(file.path));
 
           uploadTask.then((res) {
-              // Image uploaded successfully, you can get the download URL
-              res.ref.getDownloadURL().then((url) {
-                  // Now you can save the download URL to Firestore or perform any other operations
-                  _reference.add({'imageUrl': url}); // Save the URL to Firestore
-              });
+            // Image uploaded successfully, you can get the download URL
+            res.ref.getDownloadURL().then((url) {
+              // Now you can save the download URL to Firestore or perform any other operations
+              _reference.add({'imageUrl': url}); // Save the URL to Firestore
+            });
           });
         },
         child: Container(
@@ -219,7 +208,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
             borderRadius: BorderRadius.circular(27.5),
             boxShadow: const [
               BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2))
-          ]),
+            ],
+          ),
           alignment: Alignment.center,
           child: Icon(
             Icons.photo_camera,
