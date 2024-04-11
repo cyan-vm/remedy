@@ -4,8 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DetailScreen extends StatelessWidget {
   final String imageUrl;
   final String timestamp;
+  final bool isFavorite;
+  final Function(bool) onFavoriteToggle;
 
-  const DetailScreen({Key? key, required this.imageUrl, required this.timestamp}) : super(key: key);
+  const DetailScreen({
+    Key? key,
+    required this.imageUrl,
+    required this.timestamp,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +55,20 @@ class DetailScreen extends StatelessWidget {
             ),
             Positioned(
               bottom: 60,
+              right: 70,
+              child: IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: Colors.pink,
+                ),
+                onPressed: () {
+                  // Toggle the favorite state and update in Firestore
+                  onFavoriteToggle(!isFavorite);
+                },
+              ),
+            ),
+            Positioned(
+              bottom: 60,
               right: 20,
               child: IconButton(
                 icon: Icon(Icons.delete),
@@ -82,9 +104,3 @@ class DetailScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

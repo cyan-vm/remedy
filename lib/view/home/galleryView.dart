@@ -137,34 +137,64 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                         physics: NeverScrollableScrollPhysics(),
                         children: snapshot.data!.docs.map((doc) {
                           var imageUrl = doc['imageUrl'];
+                          var isFavorite = doc['isFavorite'] ?? false;
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => DetailScreen(imageUrl: imageUrl, timestamp: doc['timestamp']),
-  ),
-);
-
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailScreen(
+                                    imageUrl: imageUrl,
+                                    timestamp: doc['timestamp'],
+                                    isFavorite: isFavorite,
+                                    onFavoriteToggle: (newValue) {
+                                      // Update isFavorite value in Firestore
+                                      doc.reference.update({'isFavorite': newValue});
+                                    },
+                                  ),
+                                ),
+                              );
                             },
                             child: Hero(
                               tag: imageUrl, // Unique tag for each image
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: TColor.lightGray,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    imageUrl,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 4, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: TColor.lightGray,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        imageUrl,
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                    child: IconButton(
+                                      icon: Icon(
+                                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                                        color: isFavorite ? Colors.red : null,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          // Toggle the favorite state
+                                          isFavorite = !isFavorite;
+                                          // Update the favorite state in Firestore
+                                          doc.reference.update({'isFavorite': isFavorite});
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
@@ -197,7 +227,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
               DateTime currentDate = DateTime.now();
               String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
               // Save image URL and date to Firestore
-              _reference.add({'imageUrl': url, 'timestamp': formattedDate});
+              _reference.add({'imageUrl': url, 'timestamp': formattedDate, 'isFavorite': false});
             });
           });
         },
