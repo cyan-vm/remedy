@@ -46,18 +46,7 @@ class DetailScreen extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: 20,
-              left: 20,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                color: Colors.white,
-              ),
-            ),
-            Positioned(
-              top: 20,
+              bottom: 60,
               right: 20,
               child: IconButton(
                 icon: Icon(Icons.delete),
@@ -73,6 +62,17 @@ class DetailScreen extends StatelessWidget {
                   // After deleting, navigate back to the previous screen
                   Navigator.pop(context); // Close the detail screen
                 },
+                color: Colors.red, // Change color to red
+              ),
+            ),
+            Positioned(
+              top: 20,
+              left: 20,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 color: Colors.white,
               ),
             ),
@@ -82,6 +82,8 @@ class DetailScreen extends StatelessWidget {
     );
   }
 }
+
+
 
 
 
