@@ -140,12 +140,12 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailScreen(imageUrl: imageUrl),
-                                ),
-                              );
+  context,
+  MaterialPageRoute(
+    builder: (context) => DetailScreen(imageUrl: imageUrl, timestamp: doc['timestamp']),
+  ),
+);
+
                             },
                             child: Hero(
                               tag: imageUrl, // Unique tag for each image
