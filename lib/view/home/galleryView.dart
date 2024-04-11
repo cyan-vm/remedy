@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:image_picker/image_picker.dart';
-
 import '../../common/colo_extension.dart';
 import '../../common_widget/round_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
@@ -22,8 +19,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
   GlobalKey<FormState> key = GlobalKey();
 
   CollectionReference _reference =
-  FirebaseFirestore.instance.collection('images'); // Updated collection reference
-
+      FirebaseFirestore.instance.collection('images'); // Updated collection reference
 
   @override
   Widget build(BuildContext context) {
@@ -122,12 +118,14 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                         return Text('Error: ${snapshot.error}');
                       }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return CircularProgressIndicator(); // Placeholder while loading
                       }
 
                       // If there are no images
-                      if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                      if (snapshot.data == null ||
+                          snapshot.data!.docs.isEmpty) {
                         return Text('No images found.');
                       }
 
@@ -138,38 +136,38 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         children: snapshot.data!.docs.map((doc) {
-                            var imageUrl = doc['imageUrl'];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                    DetailScreen(imageUrl: imageUrl),
-                                  ),
-                                );
-                              },
-                              child: Hero(
-                                tag: imageUrl, // Unique tag for each image
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
+                          var imageUrl = doc['imageUrl'];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailScreen(imageUrl: imageUrl),
+                                ),
+                              );
+                            },
+                            child: Hero(
+                              tag: imageUrl, // Unique tag for each image
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
                                     horizontal: 4, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: TColor.lightGray,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
-                                      imageUrl,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
+                                decoration: BoxDecoration(
+                                  color: TColor.lightGray,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    imageUrl,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-                            );
+                            ),
+                          );
                         }).toList(),
                       );
                     },
@@ -185,8 +183,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           print('this is a test');
           print('this is a test');
           ImagePicker imagePicker = ImagePicker();
-          XFile? file =
-          await imagePicker.pickImage(source: ImageSource.gallery);
+          XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
           print('${file?.path}');
 
           if (file == null) return;
@@ -195,13 +192,13 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           UploadTask uploadTask = ref.putFile(File(file.path));
 
           uploadTask.then((res) {
-              res.ref.getDownloadURL().then((url) {
-                  // New code: Get current date
-                  DateTime currentDate = DateTime.now();
-                  String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
-                  // Save image URL and date to Firestore
-                  _reference.add({'imageUrl': url, 'date': formattedDate}); 
-              });
+            res.ref.getDownloadURL().then((url) {
+              // New code: Get current date
+              DateTime currentDate = DateTime.now();
+              String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+              // Save image URL and date to Firestore
+              _reference.add({'imageUrl': url, 'timestamp': formattedDate});
+            });
           });
         },
         child: Container(
@@ -210,9 +207,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: TColor.secondaryG),
             borderRadius: BorderRadius.circular(27.5),
-            boxShadow: const [
-              BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2))
-            ],
+            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2))],
           ),
           alignment: Alignment.center,
           child: Icon(
