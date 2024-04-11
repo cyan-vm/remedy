@@ -22,7 +22,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
   GlobalKey<FormState> key = GlobalKey();
 
   CollectionReference _reference =
-  FirebaseFirestore.instance.collection('imagesWithTimestamp'); // Updated collection reference
+  FirebaseFirestore.instance.collection('images'); // Updated collection reference
 
 
   @override
@@ -138,38 +138,38 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         children: snapshot.data!.docs.map((doc) {
-                          var imageUrl = doc['imageUrl'];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailScreen(imageUrl: imageUrl),
-                                ),
-                              );
-                            },
-                            child: Hero(
-                              tag: imageUrl, // Unique tag for each image
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
+                            var imageUrl = doc['imageUrl'];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                    DetailScreen(imageUrl: imageUrl),
+                                  ),
+                                );
+                              },
+                              child: Hero(
+                                tag: imageUrl, // Unique tag for each image
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
                                     horizontal: 4, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: TColor.lightGray,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    imageUrl,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
+                                  decoration: BoxDecoration(
+                                    color: TColor.lightGray,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      imageUrl,
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
+                            );
                         }).toList(),
                       );
                     },
@@ -183,9 +183,10 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
       floatingActionButton: InkWell(
         onTap: () async {
           print('this is a test');
+          print('this is a test');
           ImagePicker imagePicker = ImagePicker();
           XFile? file =
-              await imagePicker.pickImage(source: ImageSource.gallery);
+          await imagePicker.pickImage(source: ImageSource.gallery);
           print('${file?.path}');
 
           if (file == null) return;
@@ -194,13 +195,14 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           UploadTask uploadTask = ref.putFile(File(file.path));
 
           uploadTask.then((res) {
-          res.ref.getDownloadURL().then((url) {
-            // New code: Get current timestamp
-            DateTime timestamp = DateTime.now();
-            // Save image URL and timestamp to Firestore
-            _reference.add({'imageUrl': url, 'timestamp': timestamp}); 
+              res.ref.getDownloadURL().then((url) {
+                  // New code: Get current date
+                  DateTime currentDate = DateTime.now();
+                  String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+                  // Save image URL and date to Firestore
+                  _reference.add({'imageUrl': url, 'date': formattedDate}); 
+              });
           });
-        });
         },
         child: Container(
           width: 55,
