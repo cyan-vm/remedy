@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DetailScreen extends StatelessWidget {
   final String imageUrl;
@@ -28,31 +29,16 @@ class DetailScreen extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                // Implement delete functionality here
-                // For example, you can show a confirmation dialog
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text("Delete Image"),
-                    content: Text("Are you sure you want to delete this image?"),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Close the dialog
-                        },
-                        child: Text("Cancel"),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Implement delete logic here
-                          // For example, you can delete the image from Firestore
-                          Navigator.pop(context); // Close the dialog
-                        },
-                        child: Text("Delete"),
-                      ),
-                    ],
-                  ),
-                );
+                var documentReference = FirebaseFirestore.instance.collection('imagesWithTimestamp').where('imageUrl', isEqualTo: imageUrl);
+
+                documentReference.get().then((querySnapshot) {
+                    querySnapshot.docs.forEach((doc) {
+                        doc.reference.delete();
+                    });
+                });
+
+                // After deleting, navigate back to the previous screen
+                Navigator.pop(context); // Close the detail screen
               },
             ),
           ],
@@ -61,3 +47,5 @@ class DetailScreen extends StatelessWidget {
     );
   }
 }
+
+

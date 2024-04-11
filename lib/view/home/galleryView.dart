@@ -22,7 +22,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
   GlobalKey<FormState> key = GlobalKey();
 
   CollectionReference _reference =
-      FirebaseFirestore.instance.collection('images');
+  FirebaseFirestore.instance.collection('imagesWithTimestamp'); // Updated collection reference
+
 
   @override
   Widget build(BuildContext context) {
@@ -193,12 +194,13 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           UploadTask uploadTask = ref.putFile(File(file.path));
 
           uploadTask.then((res) {
-            // Image uploaded successfully, you can get the download URL
-            res.ref.getDownloadURL().then((url) {
-              // Now you can save the download URL to Firestore or perform any other operations
-              _reference.add({'imageUrl': url}); // Save the URL to Firestore
-            });
+          res.ref.getDownloadURL().then((url) {
+            // New code: Get current timestamp
+            DateTime timestamp = DateTime.now();
+            // Save image URL and timestamp to Firestore
+            _reference.add({'imageUrl': url, 'timestamp': timestamp}); 
           });
+        });
         },
         child: Container(
           width: 55,
