@@ -51,7 +51,7 @@ class MealRecommendCell extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
-              "${fObj["size"]} | ${fObj["time"]} | ${fObj["kcal"]}",
+              "${fObj["kcal"]}",
               style: TextStyle(color: TColor.gray, fontSize: 12),
             ),
           ),
@@ -68,7 +68,7 @@ class MealRecommendCell extends StatelessWidget {
                   type: isEvent
                       ? RoundButtonType.bgGradient
                       : RoundButtonType.bgSGradient,
-                  title: "View",
+                  title: "+",
                   onPressed: () {}),
             ),
           ),

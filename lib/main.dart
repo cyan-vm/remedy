@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primaryColor: TColor.primaryColor1,
           fontFamily: "Poppins"),
-      home: const PhotoProgressView(),
+      home: const MainTabView(),
     );
   }
 }
