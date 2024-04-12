@@ -19,7 +19,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
   GlobalKey<FormState> key = GlobalKey();
 
   CollectionReference _reference =
-      FirebaseFirestore.instance.collection('images'); // Updated collection reference
+  FirebaseFirestore.instance.collection('images'); // Updated collection reference
 
   List<String> selectedPhotos = [];
 
@@ -56,7 +56,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Please select two photos to compare.'),
+                    content: Text('Please select two photos to compare.'),
                 ));
               }
             },
@@ -127,13 +127,13 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                       }
 
                       if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
+                        ConnectionState.waiting) {
                         return CircularProgressIndicator(); // Placeholder while loading
                       }
 
                       // If there are no images
                       if (snapshot.data == null ||
-                          snapshot.data!.docs.isEmpty) {
+                        snapshot.data!.docs.isEmpty) {
                         return Text('No images found.');
                       }
 
@@ -205,22 +205,40 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                                 ),
                                 Positioned(
                                   top: 4,
-                                  left: 4,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                                      color: isSelected ? Colors.blue : null,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                          // Toggle the selection state
-                                          if (isSelected) {
-                                            selectedPhotos.remove(imageUrl);
-                                          } else {
-                                            selectedPhotos.add(imageUrl);
-                                          }
-                                      });
-                                    },
+                                  right: 4,
+                                  child: Column(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                                          color: isFavorite ? Colors.red : null,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                              // Toggle the favorite state
+                                              isFavorite = !isFavorite;
+                                              // Update the favorite state in Firestore
+                                              doc.reference.update({'isFavorite': isFavorite});
+                                          });
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                                          color: isSelected ? Colors.blue : null,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                              // Toggle the selection state
+                                              if (isSelected) {
+                                                selectedPhotos.remove(imageUrl);
+                                              } else {
+                                                selectedPhotos.add(imageUrl);
+                                              }
+                                          });
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -250,13 +268,13 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
           UploadTask uploadTask = ref.putFile(File(file.path));
 
           uploadTask.then((res) {
-            res.ref.getDownloadURL().then((url) {
-              // New code: Get current date
-              DateTime currentDate = DateTime.now();
-              String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
-              // Save image URL and date to Firestore
-              _reference.add({'imageUrl': url, 'timestamp': formattedDate, 'isFavorite': false});
-            });
+              res.ref.getDownloadURL().then((url) {
+                  // New code: Get current date
+                  DateTime currentDate = DateTime.now();
+                  String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+                  // Save image URL and date to Firestore
+                  _reference.add({'imageUrl': url, 'timestamp': formattedDate, 'isFavorite': false});
+              });
           });
         },
         child: Container(
@@ -290,13 +308,20 @@ class ComparePhotosView extends StatelessWidget {
       appBar: AppBar(
         title: Text('Compare Photos'),
       ),
-      body: Row(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Image.network(photoUrls[0]),
+            child: Image.network(
+              photoUrls[0],
+              fit: BoxFit.cover,
+            ),
           ),
           Expanded(
-            child: Image.network(photoUrls[1]),
+            child: Image.network(
+              photoUrls[1],
+              fit: BoxFit.cover,
+            ),
           ),
         ],
       ),
