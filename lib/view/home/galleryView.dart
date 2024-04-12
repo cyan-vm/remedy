@@ -21,6 +21,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
   CollectionReference _reference =
       FirebaseFirestore.instance.collection('images'); // Updated collection reference
 
+  List<String> selectedPhotos = [];
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -42,21 +44,37 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
         ),
         actions: [
           InkWell(
-            onTap: () {},
+            onTap: () {
+              if (selectedPhotos.length == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ComparePhotosView(
+                      photoUrls: selectedPhotos,
+                    ),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Please select two photos to compare.'),
+                ));
+              }
+            },
             child: Container(
               margin: const EdgeInsets.all(8),
               height: 40,
-              width: 40,
+              width: 70, // increased width to accommodate text
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: TColor.lightGray,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Image.asset(
-                "assets/img/more_btn.png",
-                width: 15,
-                height: 15,
-                fit: BoxFit.contain,
+              child: Text(
+                "Compare",
+                style: TextStyle(
+                  color: TColor.gray,
+                  fontSize: 12,
+                ),
               ),
             ),
           )
@@ -84,16 +102,6 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                           color: TColor.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "See more",
-                          style: TextStyle(
-                            color: TColor.gray,
-                            fontSize: 12,
-                          ),
                         ),
                       ),
                     ],
@@ -131,37 +139,37 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
 
                       // Display images
                       // Inside the StreamBuilder where you display images
+                      // Inside the StreamBuilder where you display images
+                      // Inside the StreamBuilder where you display images
                       return GridView.count(
                         crossAxisCount: 3, // Number of columns
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         children: snapshot.data!.docs.map((doc) {
-                          var imageUrl = doc['imageUrl'];
-                          var isFavorite = doc['isFavorite'] ?? false;
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailScreen(
-                                    imageUrl: imageUrl,
-                                    timestamp: doc['timestamp'],
-                                    isFavorite: isFavorite,
-                                    onFavoriteToggle: (newValue) {
-                                      // Update isFavorite value in Firestore
-                                      doc.reference.update({'isFavorite': newValue});
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Hero(
-                              tag: imageUrl, // Unique tag for each image
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 4),
+                            var imageUrl = doc['imageUrl'];
+                            var isFavorite = doc['isFavorite'] ?? false;
+                            var isSelected = selectedPhotos.contains(imageUrl); // Check if image is selected
+                            return Stack(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailScreen(
+                                          imageUrl: imageUrl,
+                                          timestamp: doc['timestamp'],
+                                          isFavorite: isFavorite,
+                                          onFavoriteToggle: (newValue) {
+                                            // Update isFavorite value in Firestore
+                                            doc.reference.update({'isFavorite': newValue});
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: TColor.lightGray,
                                       borderRadius: BorderRadius.circular(10),
@@ -176,30 +184,50 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                                       ),
                                     ),
                                   ),
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: IconButton(
-                                      icon: Icon(
-                                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                                        color: isFavorite ? Colors.red : null,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      color: isFavorite ? Colors.red : null,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
                                           // Toggle the favorite state
                                           isFavorite = !isFavorite;
                                           // Update the favorite state in Firestore
                                           doc.reference.update({'isFavorite': isFavorite});
-                                        });
-                                      },
-                                    ),
+                                      });
+                                    },
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  left: 4,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                                      color: isSelected ? Colors.blue : null,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                          // Toggle the selection state
+                                          if (isSelected) {
+                                            selectedPhotos.remove(imageUrl);
+                                          } else {
+                                            selectedPhotos.add(imageUrl);
+                                          }
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
                         }).toList(),
                       );
+
                     },
                   ),
                 ],
@@ -246,6 +274,31 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
             color: TColor.white,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ComparePhotosView extends StatelessWidget {
+  final List<String> photoUrls;
+
+  const ComparePhotosView({Key? key, required this.photoUrls}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Compare Photos'),
+      ),
+      body: Row(
+        children: [
+          Expanded(
+            child: Image.network(photoUrls[0]),
+          ),
+          Expanded(
+            child: Image.network(photoUrls[1]),
+          ),
+        ],
       ),
     );
   }
