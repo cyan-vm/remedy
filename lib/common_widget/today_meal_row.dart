@@ -40,15 +40,22 @@ class TodayMealRow extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+                Text(
+                  "${mObj["kcal"]}",
+                  style: TextStyle(
+                    color: TColor.gray,
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),
           IconButton(
             onPressed: onDelete,
             icon: Icon(
-              Icons.close, // Change the icon to 'X' (close icon)
+              Icons.close,
               size: 25,
-              color: Colors.black, // Adjust color as needed
+              color: Colors.black,
             ),
           )
         ],
@@ -56,3 +63,4 @@ class TodayMealRow extends StatelessWidget {
     );
   }
 }
+

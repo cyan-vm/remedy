@@ -15,16 +15,25 @@ class _MealPlannerViewState extends State<MealPlannerView> {
     {
       "name": "Honey Pancake",
       "image": "assets/img/rd_1.png",
-      "kcal": "180kCal",
+      "kcal": 180,
     },
     {
       "name": "Canai Bread",
       "image": "assets/img/m_4.png",
-      "kcal": "230kCal",
+      "kcal": 230,
     },
   ];
 
   List<Map<String, dynamic>> todayMealArr = [];
+
+  num getTotalCalories() {
+  num totalCalories = 0;
+  todayMealArr.forEach((meal) {
+    totalCalories += meal["kcal"];
+  });
+  return totalCalories;
+}
+
 
   void addToTodayMeal(int index) {
     setState(() {
@@ -67,10 +76,20 @@ class _MealPlannerViewState extends State<MealPlannerView> {
             ),
           ),
         ),
-        title: Text(
-          "Meal Planner",
-          style: TextStyle(
-              color: TColor.black, fontSize: 16, fontWeight: FontWeight.w700),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Meal Planner",
+              style: TextStyle(
+                color: TColor.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(width: 8),
+            
+          ],
         ),
       ),
       backgroundColor: TColor.white,
@@ -89,26 +108,35 @@ class _MealPlannerViewState extends State<MealPlannerView> {
                       Text(
                         "Today Meals",
                         style: TextStyle(
-                            color: TColor.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700),
+                          color: TColor.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        "Total Calories: ${getTotalCalories()} kcal",
+                        style: TextStyle(
+                          color: TColor.black,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
                   ListView.builder(
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: todayMealArr.length,
-                      itemBuilder: (context, index) {
-                        var mObj = todayMealArr[index];
-                        return TodayMealRow(
-                          mObj: mObj,
-                          onDelete: () {
-                            deleteFromTodayMeal(index);
-                          },
-                        );
-                      }),
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: todayMealArr.length,
+                    itemBuilder: (context, index) {
+                      var mObj = todayMealArr[index];
+                      return TodayMealRow(
+                        mObj: mObj,
+                        onDelete: () {
+                          deleteFromTodayMeal(index);
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -117,27 +145,29 @@ class _MealPlannerViewState extends State<MealPlannerView> {
               child: Text(
                 "Your meals",
                 style: TextStyle(
-                    color: TColor.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700),
+                  color: TColor.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             SizedBox(
               height: media.width * 0.6,
               child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: recommendArr.length,
-                  itemBuilder: (context, index) {
-                    var fObj = recommendArr[index];
-                    return MealRecommendCell(
-                      fObj: fObj,
-                      index: index,
-                      onAddToToday: () {
-                        addToTodayMeal(index);
-                      },
-                    );
-                  }),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                scrollDirection: Axis.horizontal,
+                itemCount: recommendArr.length,
+                itemBuilder: (context, index) {
+                  var fObj = recommendArr[index];
+                  return MealRecommendCell(
+                    fObj: fObj,
+                    index: index,
+                    onAddToToday: () {
+                      addToTodayMeal(index);
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -145,3 +175,4 @@ class _MealPlannerViewState extends State<MealPlannerView> {
     );
   }
 }
+
