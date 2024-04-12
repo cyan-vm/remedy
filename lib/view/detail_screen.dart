@@ -8,11 +8,11 @@ class DetailScreen extends StatelessWidget {
   final Function(bool) onFavoriteToggle;
 
   const DetailScreen({
-    Key? key,
-    required this.imageUrl,
-    required this.timestamp,
-    required this.isFavorite,
-    required this.onFavoriteToggle,
+      Key? key,
+      required this.imageUrl,
+      required this.timestamp,
+      required this.isFavorite,
+      required this.onFavoriteToggle,
   }) : super(key: key);
 
   @override
@@ -73,12 +73,13 @@ class DetailScreen extends StatelessWidget {
               child: IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () {
-                  var documentReference = FirebaseFirestore.instance.collection('imagesWithTimestamp').where('imageUrl', isEqualTo: imageUrl);
+                  // Find the document reference by imageUrl
+                  var documentReference = FirebaseFirestore.instance.collection('images').where('imageUrl', isEqualTo: imageUrl);
 
                   documentReference.get().then((querySnapshot) {
-                    querySnapshot.docs.forEach((doc) {
-                      doc.reference.delete();
-                    });
+                      querySnapshot.docs.forEach((doc) {
+                          doc.reference.delete();
+                      });
                   });
 
                   // After deleting, navigate back to the previous screen
@@ -86,6 +87,7 @@ class DetailScreen extends StatelessWidget {
                 },
                 color: Colors.red, // Change color to red
               ),
+
             ),
             Positioned(
               top: 20,
