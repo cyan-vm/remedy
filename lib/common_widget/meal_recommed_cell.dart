@@ -1,12 +1,12 @@
 import 'package:fitness/common_widget/round_button.dart';
 import 'package:flutter/material.dart';
-
 import '../common/colo_extension.dart';
 
 class MealRecommendCell extends StatelessWidget {
-  final Map fObj;
+  final Map<String, dynamic> fObj;
   final int index;
-  const MealRecommendCell({super.key, required this.index, required this.fObj});
+  final VoidCallback onAddToToday;
+  const MealRecommendCell({Key? key, required this.index, required this.fObj, required this.onAddToToday});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class MealRecommendCell extends StatelessWidget {
                     TColor.secondaryColor1.withOpacity(0.5)
                   ],
           ),
-          borderRadius:  BorderRadius.circular(25)),
+          borderRadius: BorderRadius.circular(25)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -41,7 +41,7 @@ class MealRecommendCell extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
-              fObj["name"],
+              fObj["name"].toString(),
               style: TextStyle(
                   color: TColor.black,
                   fontSize: 14,
@@ -69,7 +69,7 @@ class MealRecommendCell extends StatelessWidget {
                       ? RoundButtonType.bgGradient
                       : RoundButtonType.bgSGradient,
                   title: "+",
-                  onPressed: () {}),
+                  onPressed: onAddToToday),
             ),
           ),
         ],
